@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VazelinavoyDrisloPay</title>
+  <script defer>
+    const merchantId = "YOUR_MERCHANT_ID";
+    const secretWord = "YOUR_SECRET_WORD"; // используется только на сервере!
+    const donations = [];
+
+    function handleDonate(event) {
+      event.preventDefault();
+      const nickname = document.getElementById("nickname").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+      const message = document.getElementById("message").value.trim();
+
+      if (!nickname || !amount || isNaN(amount) || amount <= 0) {
+        alert("Пожалуйста, введите корректные данные.");
+        return;
+      }
+
+      const orderId = Date.now();
+      const currency = "RUB";
+
+      const url = new URL("https://pay.freekassa.ru");
+      url.searchParams.set("m", merchantId);
+      url.searchParams.set("oa", amount);
+      url.searchParams.set("o", orderId);
+      url.searchParams.set("currency", currency);
+      url.searchParams.set("us_nick", nickname);
+      url.searchParams.set("us_msg", message);
+
+      window.open(url.toString(), "_blank");
+    }
+
+    // Пример ручного добавления в список (будет заменено на вебхук с сервера)
+    function addDonation(nickname, amount, message) {
+      donations.push({ nickname, amount, message });
+      updateDonations();
+    }
+
+    function updateDonations() {
+      const list = document.getElementById("donation-list");
+      list.innerHTML = "";
+      let total = 0;
+
+      donations.forEach(d => {
+        total += d.amount;
+        const entry = document.createElement("div");
+        entry.className = "donation-entry";
+        entry.textContent = `${d.nickname} — ${d.amount}₽: ${d.message}`;
+        list.appendChild(entry);
+      });
+
+      document.getElementById("total").textContent = `Итого собрано: ${total}₽`;
+    }
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .donation-entry {
+      background: #e0ffe0;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
+    #total {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Поддержи стримера!</h1>
+  <form id="donation-form" onsubmit="handleDonate(event)">
+    <input type="text" id="nickname" placeholder="Твой ник" required />
+    <input type="number" id="amount" placeholder="Сколько задонатить (₽)" required />
+    <textarea id="message" placeholder="Сообщение (необязательно)"></textarea>
+    <button type="submit">Задонатить</button>
+  </form>
+
+  <div id="total">Итого собрано: 0₽</div>
+  <div id="donation-list"></div>
+</body>
+</html>
