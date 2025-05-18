@@ -3,26 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VazelinavoyDrisloPay</title>
+  <title>Поддержи стримера!</title>
   <script defer>
-    const merchantId = "YOUR_MERCHANT_ID";
-    const secretWord = "YOUR_SECRET_WORD"; // используется только на сервере!
-    const donations = [];
-
+    const merchantId = "ВАШ_MERCHANT_ID"; // Замените на ваш Merchant ID
     function handleDonate(event) {
       event.preventDefault();
       const nickname = document.getElementById("nickname").value.trim();
       const amount = parseFloat(document.getElementById("amount").value);
       const message = document.getElementById("message").value.trim();
-
       if (!nickname || !amount || isNaN(amount) || amount <= 0) {
         alert("Пожалуйста, введите корректные данные.");
         return;
       }
-
       const orderId = Date.now();
       const currency = "RUB";
-
       const url = new URL("https://pay.freekassa.ru");
       url.searchParams.set("m", merchantId);
       url.searchParams.set("oa", amount);
@@ -30,30 +24,7 @@
       url.searchParams.set("currency", currency);
       url.searchParams.set("us_nick", nickname);
       url.searchParams.set("us_msg", message);
-
       window.open(url.toString(), "_blank");
-    }
-
-    // Пример ручного добавления в список (будет заменено на вебхук с сервера)
-    function addDonation(nickname, amount, message) {
-      donations.push({ nickname, amount, message });
-      updateDonations();
-    }
-
-    function updateDonations() {
-      const list = document.getElementById("donation-list");
-      list.innerHTML = "";
-      let total = 0;
-
-      donations.forEach(d => {
-        total += d.amount;
-        const entry = document.createElement("div");
-        entry.className = "donation-entry";
-        entry.textContent = `${d.nickname} — ${d.amount}₽: ${d.message}`;
-        list.appendChild(entry);
-      });
-
-      document.getElementById("total").textContent = `Итого собрано: ${total}₽`;
     }
   </script>
   <style>
@@ -81,17 +52,6 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    .donation-entry {
-      background: #e0ffe0;
-      padding: 10px;
-      margin-bottom: 8px;
-      border-radius: 4px;
-    }
-    #total {
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
@@ -102,8 +62,5 @@
     <textarea id="message" placeholder="Сообщение (необязательно)"></textarea>
     <button type="submit">Задонатить</button>
   </form>
-
-  <div id="total">Итого собрано: 0₽</div>
-  <div id="donation-list"></div>
 </body>
 </html>
